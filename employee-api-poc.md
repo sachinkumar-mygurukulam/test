@@ -1,14 +1,14 @@
 # Employee API Proof of Concept
 
-![employee-api-logo](https://github.com/user-attachments/assets/employee-api-logo.png) <!-- Replace with your actual logo if available -->
 
 ---
 ## Author Information
-
-| Created by         | Created on    | Version  | Last updated On | Pre Reviewer | L0 Reviewer | L1 Reviewer | L2 Reviewer |
-|--------------------|--------------|----------|-----------------|--------------|-------------|-------------|-------------|
-| [Your Name]        | 29-07-2025   | V 1.0    | 29-07-2025      | [Reviewer]   | -           | -           | -           |
-
+| Last Updated On | Version | Author       | Level           | Reviewer   |
+|-----------------|---------|--------------|-----------------|------------|
+| 29-07-2025      | V1.0    | Sachin Kumar | Internal Review | Pritam     |
+| 31-07-2025      | V1.1    | Sachin Kumar | L0              |Shreya/Sharvani|
+|                 |         | Sachin Kumar | L1              | Abhishek V |
+|                 |         | Sachin Kumar | L2              | Abhishek Dubey/Rishabh sharma|
 ---
 
 ## Table of Contents
@@ -18,7 +18,6 @@
   - [System Requirements](#system-requirements)
   - [Dependencies](#dependencies)
   - [Important Ports](#important-ports)
-- [Architecture](#architecture)
 - [Step-by-step Installation](#step-by-step-installation)
 - [Basic Operations](#basic-operations)
 - [Troubleshooting](#troubleshooting)
@@ -64,25 +63,6 @@ This Proof of Concept demonstrates the installation, configuration, and basic us
 | 6379 | Redis default port                  |
 | 8080 | Employee API default HTTP port      |
 | 8081 | Alternative API port (if 8080 busy) |
-
----
-
-## Architecture
-
-The Employee API microservice follows a modular architecture:
-
-- **Golang REST API**: Handles HTTP requests for employee CRUD operations.
-- **ScyllaDB**: Stores employee records, highly available and distributed.
-- **Redis (Optional)**: Caches frequent queries to reduce DB load.
-- **Configuration File**: `config.yaml` for DB and service config.
-
-**Data Flow:**
-1. API receives request.
-2. Checks Redis for cached response (if enabled).
-3. If cache miss, queries ScyllaDB.
-4. Responds to client and updates cache.
-
-<img width="1000" alt="employee-api-architecture" src="https://github.com/user-attachments/assets/employee-api-arch.png" />
 
 ---
 
@@ -313,7 +293,7 @@ http://<your-public-ip>:8081/api/v1/employee/health
 
 | Name            | Email address                           |
 |-----------------|----------------------------------------|
-| [Your Name]     | your.email@example.com                  |
+| Sachin Kumar     | [sachin.kumar.snaatak@mygurukulam.co](sachin.kumar.snaatak@mygurukulam.co)                  |
 
 ---
 
