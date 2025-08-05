@@ -1,11 +1,11 @@
-# Employee API Proof of Concept
+# Employee API POC
 <img width="311" height="162" alt="Image" src="https://github.com/user-attachments/assets/4d1f784e-0f45-499b-86f5-47ca6e6c4940" />
 
 ## Author Information
 | Last Updated On | Version | Author       | Level           | Reviewer   |
 |-----------------|---------|--------------|-----------------|------------|
 | 29-07-2025      | V1.0    | Sachin Kumar | Internal Review | Pritam     |
-| 31-07-2025      | V1.1    | Sachin Kumar | L0              |Shreya/Sharvani|
+| 31-07-2025      | V1.1    | Sachin Kumar | L0              |Shreya/Sharvari|
 |                 |         | Sachin Kumar | L1              | Abhishek V |
 |                 |         | Sachin Kumar | L2              | Abhishek Dubey/Rishabh sharma|
 ---
@@ -27,7 +27,7 @@
 
 ## Objective
 
-This Proof of Concept demonstrates the installation, configuration, and basic usage of the Employee REST API—a Golang-based microservice that performs employee-related operations within the OT-Micro[...]
+This Proof of Concept demonstrates the installation, configuration, and basic usage of the Employee REST API—a Golang-based microservice that performs employee-related operations within the OT-Microservice.
 
 ---
 
@@ -74,6 +74,8 @@ git clone https://github.com/OT-MICROSERVICES/employee-api.git
 cd employee-api
 ```
 
+<img width="859" height="296" alt="Image" src="https://github.com/user-attachments/assets/0d8cf109-daa2-4f2c-bc10-cc6761e7aa80" />
+
 ### 2. Install ScyllaDB
 
 ```bash
@@ -91,6 +93,7 @@ sudo apt-get install -y openjdk-17-jre-headless
 sudo update-java-alternatives --jre-headless -s java-1.17.0-openjdk-amd64
 java -version
 ```
+<img width="758" height="161" alt="Image" src="https://github.com/user-attachments/assets/e0a6688e-4192-4bdb-b3d1-949d07e29a19" />
 
 ### 4. Configure ScyllaDB
 
@@ -107,6 +110,8 @@ sudo nano /etc/scylla/scylla.yaml
   ```
 - Comment out: `developer_mode = true`
 
+<img width="758" height="481" alt="Image" src="https://github.com/user-attachments/assets/ed85ccd9-ebf0-4342-8ab1-a286f2515f72" />
+
 ### 5. Initialize and Start ScyllaDB
 
 ```bash
@@ -121,6 +126,8 @@ Check node status:
 ```bash
 nodetool status
 ```
+
+ <img width="756" height="253" alt="Image" src="https://github.com/user-attachments/assets/d67da6c9-44ab-465b-97f3-5244c07aadf6" />
 
 ### 6. Create the Employee Database
 
@@ -196,17 +203,77 @@ Edit `main.go` or `router.go`:
 router.Run(":8080")  # Change to another port, e.g. ":8081"
 ```
 
-### 10. Update ScyllaDB Host in API Config
+---
+
+### 10. Run Employee API as a Background Service 
+
+To keep your API running even after closing the terminal, you should run it as a background service.
+Running your API as a systemd service ensures it will automatically restart on crash and survive server reboots.
+
+1. **Create a systemd service file:**
+
+   ```bash
+   sudo nano /etc/systemd/system/employee-api.service
+   ```
+
+2. **Paste this configuration (adjust paths if needed):**
+
+   ```ini
+   [Unit]
+   Description=Employee API Service
+   After=network.target
+
+   [Service]
+   User=ubuntu
+   WorkingDirectory=/home/ubuntu/employee-api
+   ExecStart=/usr/local/go/bin/go run main.go
+   Restart=always
+   RestartSec=10
+   Environment="GIN_MODE=release"
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+   <img width="878" height="299" alt="Image" src="https://github.com/user-attachments/assets/c2dfb9a9-63a7-461c-8a23-aff077636c93" />
+
+3. **Enable and start the service:**
+
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl start employee-api
+   sudo systemctl enable employee-api  
+   ```
+
+4. **Verify it's running:**
+
+   ```bash
+   sudo systemctl status employee-api
+   ```
+
+<img width="802" height="431" alt="Image" src="https://github.com/user-attachments/assets/cccaece9-4b9b-4c26-8cfe-8dc905b00944" />
+
+---
+
+### 11. Update ScyllaDB Host in API Config
 
 Edit `config.yaml`:
 
 ```yaml
 scylladb:
-  host: <YOUR_INSTANCE_IP>
-  port: 9042
-```
+  host: ["172.31.16.8"]
+  username: scylladb
+  password: password
+  keyspace: employee_db
 
-### 11. (Optional) Install and Start Redis
+redis:
+  enabled: false
+  host: 172.31.16.8
+  password: password
+  database: 0
+```
+<img width="756" height="231" alt="Image" src="https://github.com/user-attachments/assets/ca52d4d3-558b-488e-96a4-cad69686b2da" />
+
+### 12. (Optional) Install and Start Redis
 
 ```bash
 sudo apt-get install redis-server -y
@@ -215,20 +282,16 @@ sudo systemctl start redis-server
 sudo systemctl status redis-server
 ```
 
+<img width="928" height="299" alt="Image" src="https://github.com/user-attachments/assets/e3839618-fb12-4d26-a007-60cbbc39ec53" />
+
 ---
 
-## Basic Operations
+## Basic Operations 
 
 ### 1. Run the Employee API
 
 ```bash
 go run main.go
-```
-Or as a background service:
-
-```bash
-nohup ./employee-api > output.log 2>&1 &
-ps aux | grep employee-api
 ```
 
 ### 2. Health Check
@@ -247,54 +310,9 @@ http://<your-public-ip>:8080/api/v1/employee/health
 ```
 <img width="1362" height="764" alt="Image" src="https://github.com/user-attachments/assets/10f91475-1338-4d77-a021-27623c061665" />
 
-### 3. API Endpoints
-
-| Endpoint                             | Method | Description                   |
-|-------------------------------------- |--------|-------------------------------|
-| /api/v1/employee/health              | GET    | Health check                  |
-| /api/v1/employee                     | POST   | Create employee record        |
-| /api/v1/employee/{id}                | GET    | Get employee by ID            |
-| /api/v1/employee/{id}                | PUT    | Update employee               |
-| /api/v1/employee/{id}                | DELETE | Delete employee               |
-| /api/v1/employee                     | GET    | List all employees            |
-
 ---
 
 ## Troubleshooting
-
-- **API not running?**
-  - Check for port conflicts:
-    ```
-    netstat -tuln | grep 8080
-    ```
-    Change port in code if needed.
-
-- **ScyllaDB issues?**
-  - Check service logs:
-    ```
-    sudo journalctl -u scylla-server
-    ```
-  - Check DB status:
-    ```
-    nodetool status
-    ```
-
-- **Go not found / Python error?**
-  - Fix with:
-    ```
-    sudo apt update
-    sudo apt install python3-apt -y
-    sudo apt install golang-go -y
-    ```
-
-- **Redis not running?**
-  - Start service:
-    ```
-    sudo systemctl start redis-server
-    ```
-
-- **Wrong DB IP in config?**
-  - Edit `config.yaml` and update `scylladb.host`.
 
 
 - **If Swagger UI shows "page not found", update the Swagger docs URL in your `main.go` file to use your EC2 private IP**
@@ -328,4 +346,3 @@ Replace `<PRIVATE_IP>` with your EC2's private IP.
 | [ScyllaDB Installation Guide](https://docs.scylladb.com/stable/operating-scylla/procedures/install/install-ubuntu.html) | ScyllaDB Ubuntu installation guide      |
 | [Go Documentation](https://golang.org/doc/)                                           | Official Golang docs                      |
 | [Redis Documentation](https://redis.io/documentation)                                 | Official Redis docs                       |
-
