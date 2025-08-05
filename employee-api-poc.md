@@ -177,14 +177,6 @@ go version
 
 <img width="711" height="517" alt="Image" src="https://github.com/user-attachments/assets/eb8c9127-a6d1-4383-8275-643230e0207b" />
 
-#### If Go not working, fix Python error
-
-```bash
-sudo apt update
-sudo apt install python3-apt -y
-sudo apt install golang-go -y
-go version
-```
 
 ### 9. Set Up Employee API
 
